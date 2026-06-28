@@ -218,7 +218,7 @@ function excluirPeca(id) {
 // --------------------------------------------------------------- eventos -----
 $("printer").addEventListener("change", (e) => {
   const v = e.target.value;
-  $("printerNome").textContent = e.target.selectedOptions[0].text.split(" (")[0];
+  $("printerNome").textContent = e.target.selectedOptions[0].text.split(/\s+[—(]/)[0].trim();
   if (v !== "custom") { $("potencia").value = v; calcular(); }
 });
 $("filamentoPerfil").addEventListener("change", () => { renderFilamentos($("filamentoPerfil").value); calcular(); });
@@ -232,7 +232,7 @@ FIELDS.forEach((id) => $(id).addEventListener("input", calcular));
 restaurarEstado();
 renderFilamentos($("filamentoPerfil").value);
 renderCatalogo();
-$("printerNome").textContent = $("printer").selectedOptions[0].text.split(" (")[0];
+$("printerNome").textContent = $("printer").selectedOptions[0].text.split(/\s+[—(]/)[0].trim();
 calcular();
 
 // PWA (só registra em http/https; em file:// é ignorado)

@@ -60,18 +60,22 @@ chave do custo de energia. Valores aproximados usados nos presets:
 | A1 | ~95 W |
 | P1P / P1S | ~110 W |
 | X1 / X1-Carbon | ~120 W |
+| **X2D (bico duplo)** | **~140 W (estimado)** — padrão |
 | H2D | ~150 W |
 
 Estes são valores médios estimados de impressão em PLA — o leito aquecido dá
-picos altos, mas a média ao longo do trabalho é bem menor. Se você medir o
-consumo real da sua máquina (com um wattímetro de tomada), ajuste no campo
-"Potência média". A tarifa de energia padrão é R$ 0,95/kWh — troque pela da
-sua conta de luz.
+picos altos (~1000 W por alguns minutos no aquecimento), mas a média ao longo
+do trabalho é bem menor. Se você medir o consumo real da sua máquina (com um
+wattímetro de tomada), ajuste no campo "Potência média". A tarifa de energia
+padrão é R$ 0,95/kWh — troque pela da sua conta de luz.
 
-> Você mencionou "Bambu Lab 2DX". Não existe um modelo com esse nome exato;
-> deixei o preset em **X1 / X1-Carbon (~120 W)** como padrão. Se a sua for a
-> **H2D** (lançamento 2025) ou outro modelo, é só escolher no seletor de
-> impressora — ou digitar a potência real.
+> **Sobre a X2D:** é uma impressora da X-series com **extrusora dupla**. A
+> Bambu Lab não publica em formato acessível a potência média exata, então o
+> preset usa **~140 W** — estimativa baseada no consumo típico da X-series
+> (~100–150 W em PLA) com um acréscimo pelo segundo bico. Para precisão total,
+> meça com um wattímetro de tomada por uma impressão e coloque o número no
+> campo "Potência média". O impacto no preço é pequeno: a energia é só uma
+> fração do custo (o filamento domina).
 
 ## Validação contra a imagem de referência
 
