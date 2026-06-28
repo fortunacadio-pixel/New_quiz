@@ -9,12 +9,13 @@ const FIELDS = [
   "desconto", "precoManual",
 ];
 
-const LS_FIL = "calc3d_filaments";
-const LS_PECAS = "calc3d_pecas";
-const LS_STATE = "calc3d_state";
+const LS_FIL = "calc3d_filaments_cad";
+const LS_PECAS = "calc3d_pecas_cad";
+const LS_STATE = "calc3d_state_cad";
 
-const brl = (v) =>
-  "R$ " + v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+// Moeda em dólar canadense (CAD)
+const money = (v) =>
+  "C$ " + v.toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const num = (id) => parseFloat($(id).value) || 0;
 const load = (k, def) => { try { return JSON.parse(localStorage.getItem(k)) ?? def; } catch { return def; } };
 const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
@@ -61,27 +62,27 @@ function calcular() {
   const lucroHora = tempoH > 0 ? lucroUnid / tempoH : 0;
 
   // saída
-  $("precoUnid").textContent = brl(precoUnid);
+  $("precoUnid").textContent = money(precoUnid);
   document.querySelector(".preco-label").textContent =
     usandoManual ? "Preço de venda (manual)" : "Preço sugerido por unidade";
-  $("custoTotal").textContent = brl(custoTotal);
-  $("lucroUnid").textContent = brl(lucroUnid);
-  $("lucroTotal").textContent = brl(lucroTotal);
+  $("custoTotal").textContent = money(custoTotal);
+  $("lucroUnid").textContent = money(lucroUnid);
+  $("lucroTotal").textContent = money(lucroTotal);
   $("margemReal").textContent = margemReal.toFixed(1) + "%";
-  $("lucroHora").textContent = brl(lucroHora);
-  $("receitaTotal").textContent = brl(receitaTotal);
+  $("lucroHora").textContent = money(lucroHora);
+  $("receitaTotal").textContent = money(receitaTotal);
   $("lucroUnid").style.color = lucroUnid >= 0 ? "var(--verde)" : "var(--vermelho)";
   $("margemReal").style.color = margemReal >= 0 ? "var(--verde)" : "var(--vermelho)";
 
   $("bdFilG").textContent = filamentoG;
-  $("bdFil").textContent = brl(custoFilamento);
+  $("bdFil").textContent = money(custoFilamento);
   $("bdPerdaP").textContent = perdaP;
-  $("bdPerda").textContent = brl(custoPerda);
+  $("bdPerda").textContent = money(custoPerda);
   $("bdEnergiaH").textContent = tempoH;
-  $("bdEnergia").textContent = brl(custoEnergia);
-  $("bdMaquina").textContent = brl(custoMaquina);
-  $("bdMao").textContent = brl(maoObra);
-  $("bdFixo").textContent = brl(fixoExtra);
+  $("bdEnergia").textContent = money(custoEnergia);
+  $("bdMaquina").textContent = money(custoMaquina);
+  $("bdMao").textContent = money(maoObra);
+  $("bdFixo").textContent = money(fixoExtra);
 
   veredito({ lucroUnid, lucroHora, metaHora, margemReal });
   persistirEstado();
@@ -96,20 +97,20 @@ function veredito({ lucroUnid, lucroHora, metaHora, margemReal }) {
     el.classList.add("bad");
     tag.textContent = "❌ INVIÁVEL";
     msg.textContent =
-      `Nesse preço você teria prejuízo de ${brl(Math.abs(lucroUnid))} por peça. ` +
+      `Nesse preço você teria prejuízo de ${money(Math.abs(lucroUnid))} por peça. ` +
       `O preço de venda não cobre o filamento + energia + custos. Aumente o preço ou reduza o custo.`;
   } else if (lucroHora < metaHora) {
     el.classList.add("warn");
     tag.textContent = "⚠️ POUCO VIÁVEL";
     msg.textContent =
-      `Dá lucro de ${brl(lucroUnid)} por peça, mas rende só ${brl(lucroHora)}/h — ` +
-      `abaixo da sua meta de ${brl(metaHora)}/h. A impressora fica muito tempo ocupada para pouco retorno.`;
+      `Dá lucro de ${money(lucroUnid)} por peça, mas rende só ${money(lucroHora)}/h — ` +
+      `abaixo da sua meta de ${money(metaHora)}/h. A impressora fica muito tempo ocupada para pouco retorno.`;
   } else {
     el.classList.add("ok");
     tag.textContent = "✅ VIÁVEL";
     msg.textContent =
-      `Vale a pena fazer: lucro de ${brl(lucroUnid)} por peça (${margemReal.toFixed(0)}% de margem) ` +
-      `e ${brl(lucroHora)}/h de impressão, acima da sua meta de ${brl(metaHora)}/h.`;
+      `Vale a pena fazer: lucro de ${money(lucroUnid)} por peça (${margemReal.toFixed(0)}% de margem) ` +
+      `e ${money(lucroHora)}/h de impressão, acima da sua meta de ${money(metaHora)}/h.`;
   }
 }
 
@@ -130,9 +131,9 @@ function restaurarEstado() {
 // ----------------------------------------------------------- filamentos ------
 function filamentosDefault() {
   return [
-    { id: uid(), nome: "PLA padrão", precoKg: 115.5 },
-    { id: uid(), nome: "PETG", precoKg: 130 },
-    { id: uid(), nome: "ABS", precoKg: 120 },
+    { id: uid(), nome: "PLA padrão", precoKg: 25 },
+    { id: uid(), nome: "PETG", precoKg: 30 },
+    { id: uid(), nome: "ABS", precoKg: 28 },
   ];
 }
 function renderFilamentos(selId) {
@@ -142,7 +143,7 @@ function renderFilamentos(selId) {
   fils.forEach((f) => {
     const o = document.createElement("option");
     o.value = f.id;
-    o.textContent = `${f.nome} — ${brl(f.precoKg)}/kg`;
+    o.textContent = `${f.nome} — ${money(f.precoKg)}/kg`;
     sel.appendChild(o);
   });
   if (selId) sel.value = selId;
@@ -152,7 +153,7 @@ function renderFilamentos(selId) {
 function novoFilamento() {
   const nome = prompt("Nome do filamento:");
   if (!nome) return;
-  const preco = parseFloat((prompt("Preço por kg (R$):", "120") || "").replace(",", "."));
+  const preco = parseFloat((prompt("Preço por kg (C$):", "25") || "").replace(",", "."));
   if (!preco || preco <= 0) return;
   const fils = load(LS_FIL, []);
   const novo = { id: uid(), nome, precoKg: preco };

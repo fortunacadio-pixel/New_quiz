@@ -2,7 +2,8 @@
 
 Calculadora web para precificar peças de impressão 3D e dizer, no rodapé,
 **se vale a pena fazer a peça ou não**. Reconstruída a partir do app de
-referência (estilo *PrimePrint3D*) e calibrada para impressoras **Bambu Lab**.
+referência (estilo *PrimePrint3D*), calibrada para impressoras **Bambu Lab**
+e com valores em **dólar canadense (CAD / C$)**.
 
 Abra `index.html` no navegador — não precisa de servidor, instalação ou
 internet. Todo o cálculo roda localmente em JavaScript, e o app pode ser
@@ -31,8 +32,13 @@ todos os custos + tempo**:
 | ⚠️ **POUCO VIÁVEL** | lucro > 0 **mas** lucro/hora < meta | Dá lucro, mas a impressora fica ocupada tempo demais para pouco retorno |
 | ❌ **INVIÁVEL** | lucro ≤ 0 | O preço de venda não cobre os custos — prejuízo |
 
-A **meta de lucro por hora** (R$/h) é configurável (padrão R$ 5,00/h) e
-representa o mínimo que você quer ganhar por hora de impressora ocupada.
+### Meta de lucro por hora (C$/h)
+
+É o **lucro mínimo que você quer por hora de impressora ocupada** — não é
+salário, porque a impressora roda sozinha. Serve para você não aceitar uma peça
+que prende a máquina por horas em troca de quase nada. Padrão **C$ 3,00/h**,
+totalmente ajustável nas configurações (suba se quiser ser mais exigente,
+abaixe se a máquina costuma ficar ociosa mesmo).
 
 ## Fórmulas
 
@@ -67,7 +73,8 @@ Estes são valores médios estimados de impressão em PLA — o leito aquecido d
 picos altos (~1000 W por alguns minutos no aquecimento), mas a média ao longo
 do trabalho é bem menor. Se você medir o consumo real da sua máquina (com um
 wattímetro de tomada), ajuste no campo "Potência média". A tarifa de energia
-padrão é R$ 0,95/kWh — troque pela da sua conta de luz.
+padrão é **C$ 0,15/kWh** (média residencial canadense — varia por província;
+veja na sua conta de luz e ajuste).
 
 > **Sobre a X2D:** é uma impressora da X-series com **extrusora dupla**. A
 > Bambu Lab não publica em formato acessível a potência média exata, então o
@@ -77,13 +84,26 @@ padrão é R$ 0,95/kWh — troque pela da sua conta de luz.
 > campo "Potência média". O impacto no preço é pequeno: a energia é só uma
 > fração do custo (o filamento domina).
 
-## Validação contra a imagem de referência
+## Moeda e valores padrão (Canadá)
 
-Com os dados originais da tela (258 g, 8 h, margem 40%, filamento ~R$115,50/kg
-e a configuração de energia da referência), as fórmulas reproduzem os números
-**centavo por centavo**: custo R$ 35,56 → preço R$ 59,27 → lucro R$ 23,71 →
-margem 40,0%. (Com a Bambu Lab a energia fica mais barata, então o custo total
-da mesma peça cai e o lucro sobe.)
+Tudo em **dólar canadense (C$)**. Padrões usados:
+
+| Item | Padrão | Observação |
+|------|--------|------------|
+| Filamento PLA | C$ 25/kg | preço típico no Canadá; PETG C$ 30, ABS C$ 28 |
+| Tarifa de energia | C$ 0,15/kWh | média residencial; ajuste pela sua província |
+| Meta de lucro/hora | C$ 3,00/h | mínimo por hora de impressora ocupada |
+| Margem desejada | 40% | sobre o preço de venda |
+
+Troque qualquer um nas configurações — o app lembra dos seus valores no
+navegador.
+
+## Validação da fórmula
+
+A lógica de cálculo foi validada centavo por centavo contra a imagem de
+referência (que era em reais): com 258 g, 8 h e margem 40%, ela reproduz
+exatamente custo → preço → lucro → margem. A matemática é a mesma; só a moeda
+e os preços de insumo mudam para o contexto canadense.
 
 ## Arquivos
 

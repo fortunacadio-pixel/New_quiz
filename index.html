@@ -36,20 +36,20 @@
         <label>Potência média (W)
           <input id="potencia" type="number" step="1" value="140" />
         </label>
-        <label>Tarifa de energia (R$/kWh)
-          <input id="tarifa" type="number" step="0.01" value="0.95" />
+        <label>Tarifa de energia (C$/kWh)
+          <input id="tarifa" type="number" step="0.01" value="0.15" />
         </label>
-        <label>Depreciação da máquina (R$/h)
+        <label>Depreciação da máquina (C$/h)
           <input id="maquinaHora" type="number" step="0.01" value="0" />
         </label>
-        <label>Mão de obra / pós-processo (R$)
+        <label>Mão de obra / pós-processo (C$)
           <input id="maoObra" type="number" step="0.01" value="0" />
         </label>
-        <label>Custo fixo extra (R$)
+        <label>Custo fixo extra (C$)
           <input id="fixoExtra" type="number" step="0.01" value="0" />
         </label>
-        <label>Meta de lucro por hora (R$/h)
-          <input id="metaHora" type="number" step="0.50" value="5.00" />
+        <label>Meta de lucro por hora (C$/h)
+          <input id="metaHora" type="number" step="0.50" value="3.00" />
         </label>
       </div>
       <p class="hint">A potência é a média durante a impressão (não o pico). Ajuste se medir o consumo real da sua Bambu Lab.</p>
@@ -62,8 +62,8 @@
         <select id="filamentoPerfil"></select>
       </label>
       <div class="grid">
-        <label>Preço do filamento (R$/kg)
-          <input id="precoKg" type="number" step="0.01" value="115.50" />
+        <label>Preço do filamento (C$/kg)
+          <input id="precoKg" type="number" step="0.01" value="25.00" />
         </label>
         <div class="btn-col">
           <button type="button" id="novoFilamento" class="btn small">+ Novo</button>
@@ -98,10 +98,10 @@
       <input id="margem" type="range" min="5" max="90" step="1" value="40" />
       <div class="range-min">5%</div>
       <div class="grid">
-        <label>Desconto por unidade (R$)
+        <label>Desconto por unidade (C$)
           <input id="desconto" type="number" step="0.01" value="0" />
         </label>
-        <label>Preço de venda manual (R$) <small>opcional</small>
+        <label>Preço de venda manual (C$) <small>opcional</small>
           <input id="precoManual" type="number" step="0.01" value="" placeholder="auto" />
         </label>
       </div>
