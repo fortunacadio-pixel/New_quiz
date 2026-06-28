@@ -9,6 +9,7 @@
   --verde: #4ade80;
   --roxo: #c084fc;
   --amarelo: #fde047;
+  --vermelho: #f87171;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -54,9 +55,10 @@ label {
   color: var(--muted);
   gap: 5px;
 }
-label.full { grid-column: 1 / -1; margin-top: 12px; }
+label.full { grid-column: 1 / -1; margin-bottom: 12px; }
+label small { color: var(--muted); opacity: .7; }
 
-input[type="number"] {
+input[type="number"], select {
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 9px;
@@ -65,11 +67,30 @@ input[type="number"] {
   font-size: 1rem;
   width: 100%;
 }
-input[type="number"]:focus { outline: none; border-color: var(--accent); }
+input:focus, select:focus { outline: none; border-color: var(--accent); }
+
+.hint { font-size: .72rem; color: var(--muted); margin-top: 10px; opacity: .85; }
 
 .margem-valor { font-size: 1.8rem; font-weight: 700; color: var(--accent); }
 input[type="range"] { width: 100%; margin: 8px 0 2px; accent-color: var(--accent); }
-.range-min { font-size: .72rem; color: var(--muted); }
+.range-min { font-size: .72rem; color: var(--muted); margin-bottom: 12px; }
+
+.btn-col { display: flex; flex-direction: column; gap: 8px; justify-content: flex-end; }
+.btn {
+  background: var(--accent);
+  color: #04222b;
+  border: none;
+  border-radius: 9px;
+  padding: 11px 14px;
+  font-size: .9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn.ghost { background: transparent; color: var(--txt); border: 1px solid var(--border); }
+.btn.small { padding: 8px 10px; font-size: .8rem; }
+
+.acoes { display: flex; gap: 10px; margin-bottom: 16px; }
+.acoes .btn { flex: 1; }
 
 .resultado { background: var(--card2); }
 
@@ -85,11 +106,7 @@ input[type="range"] { width: 100%; margin: 8px 0 2px; accent-color: var(--accent
 .preco-label { font-size: .8rem; color: var(--muted); }
 .preco-valor { font-size: 2.1rem; font-weight: 800; color: var(--accent); }
 
-.metricas {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
+.metricas { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .metrica {
   background: var(--bg);
   border: 1px solid var(--border);
@@ -116,4 +133,53 @@ input[type="range"] { width: 100%; margin: 8px 0 2px; accent-color: var(--accent
 .breakdown li span { color: var(--muted); }
 .breakdown li:last-child { border-bottom: none; }
 
+.catalogo { list-style: none; }
+.catalogo li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 2px;
+  border-bottom: 1px solid var(--border);
+  font-size: .85rem;
+}
+.catalogo li:last-child { border-bottom: none; }
+.catalogo .cat-info { flex: 1; min-width: 0; }
+.catalogo .cat-nome { font-weight: 600; }
+.catalogo .cat-sub { font-size: .72rem; color: var(--muted); }
+.catalogo .cat-actions { display: flex; gap: 6px; }
+.catalogo button {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--txt); border-radius: 7px; padding: 5px 9px;
+  font-size: .75rem; cursor: pointer;
+}
+
+/* VEREDITO */
+.veredito {
+  border-radius: 14px;
+  padding: 18px 16px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 2px solid var(--border);
+  background: var(--card);
+}
+.vd-tag { font-size: 1.25rem; font-weight: 800; letter-spacing: .3px; }
+.vd-msg { font-size: .9rem; color: var(--txt); }
+.veredito.ok { border-color: var(--verde); background: rgba(74,222,128,.08); }
+.veredito.ok .vd-tag { color: var(--verde); }
+.veredito.warn { border-color: var(--amarelo); background: rgba(253,224,71,.08); }
+.veredito.warn .vd-tag { color: var(--amarelo); }
+.veredito.bad { border-color: var(--vermelho); background: rgba(248,113,113,.10); }
+.veredito.bad .vd-tag { color: var(--vermelho); }
+
 .rodape { text-align: center; color: var(--muted); font-size: .72rem; margin-top: 8px; }
+
+@media print {
+  body { background: #fff; color: #000; }
+  .no-print, summary, input[type="range"] { display: none !important; }
+  .card, .veredito { border-color: #ccc; background: #fff; }
+  .preco-valor, .accent, .verde, .roxo, .amarelo { color: #000 !important; }
+  .config { display: none; }
+}
