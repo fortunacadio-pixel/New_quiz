@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Calculadora de Preço — Impressão 3D</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <h1>🧮 Calculadora 3D</h1>
+      <p class="sub">Precificação de peças de impressão 3D</p>
+    </header>
+
+    <!-- CONFIGURAÇÕES -->
+    <details class="card config">
+      <summary>⚙️ Configurações (custos base)</summary>
+      <div class="grid">
+        <label>Preço do filamento (R$/kg)
+          <input id="precoKg" type="number" step="0.01" value="115.50" />
+        </label>
+        <label>Potência da impressora (W)
+          <input id="potencia" type="number" step="1" value="800" />
+        </label>
+        <label>Tarifa de energia (R$/kWh)
+          <input id="tarifa" type="number" step="0.01" value="0.90" />
+        </label>
+        <label>Custo de máquina/depreciação (R$/h)
+          <input id="maquinaHora" type="number" step="0.01" value="0" />
+        </label>
+        <label>Mão de obra / pós-processo (R$)
+          <input id="maoObra" type="number" step="0.01" value="0" />
+        </label>
+        <label>Custo fixo extra (R$)
+          <input id="fixoExtra" type="number" step="0.01" value="0" />
+        </label>
+      </div>
+    </details>
+
+    <!-- DADOS DA PEÇA -->
+    <section class="card">
+      <h2>📦 Dados da peça</h2>
+      <div class="grid">
+        <label>Filamento usado (g)
+          <input id="filamento" type="number" step="0.1" value="258" />
+        </label>
+        <label>Tempo de impressão (h)
+          <input id="tempo" type="number" step="0.1" value="8" />
+        </label>
+        <label>Quantidade
+          <input id="quantidade" type="number" step="1" value="1" />
+        </label>
+        <label>Perda / refugo (%)
+          <input id="perda" type="number" step="0.1" value="0" />
+        </label>
+      </div>
+    </section>
+
+    <!-- MARGEM -->
+    <section class="card">
+      <h2>📊 Margem desejada</h2>
+      <div class="margem-valor"><span id="margemLabel">40</span>%</div>
+      <input id="margem" type="range" min="5" max="90" step="1" value="40" />
+      <div class="range-min">5%</div>
+      <label class="full">Desconto por unidade (R$)
+        <input id="desconto" type="number" step="0.01" value="0" />
+      </label>
+    </section>
+
+    <!-- RESULTADO -->
+    <section class="card resultado">
+      <h2>🏆 Resultado</h2>
+      <div class="preco-box">
+        <span class="preco-label">Preço sugerido por unidade</span>
+        <span class="preco-valor" id="precoUnid">R$ 0,00</span>
+      </div>
+
+      <div class="metricas">
+        <div class="metrica">
+          <span>Custo total</span>
+          <strong id="custoTotal">R$ 0,00</strong>
+        </div>
+        <div class="metrica">
+          <span>Lucro por unidade</span>
+          <strong class="verde" id="lucroUnid">R$ 0,00</strong>
+        </div>
+        <div class="metrica">
+          <span>Lucro total (qtd)</span>
+          <strong class="roxo" id="lucroTotal">R$ 0,00</strong>
+        </div>
+        <div class="metrica">
+          <span>Margem real</span>
+          <strong class="verde" id="margemReal">0%</strong>
+        </div>
+        <div class="metrica">
+          <span>Lucro por hora</span>
+          <strong class="amarelo" id="lucroHora">R$ 0,00</strong>
+        </div>
+        <div class="metrica">
+          <span>Receita total</span>
+          <strong id="receitaTotal">R$ 0,00</strong>
+        </div>
+      </div>
+
+      <h3>Composição do custo (por unidade)</h3>
+      <ul class="breakdown">
+        <li><span>Filamento (<i id="bdFilG">0</i>g)</span><b id="bdFil">R$ 0,00</b></li>
+        <li><span>Perda/refugo (<i id="bdPerdaP">0</i>%)</span><b id="bdPerda">R$ 0,00</b></li>
+        <li><span>Energia (<i id="bdEnergiaH">0</i>h)</span><b id="bdEnergia">R$ 0,00</b></li>
+        <li><span>Máquina/depreciação</span><b id="bdMaquina">R$ 0,00</b></li>
+        <li><span>Mão de obra</span><b id="bdMao">R$ 0,00</b></li>
+        <li><span>Custo fixo extra</span><b id="bdFixo">R$ 0,00</b></li>
+      </ul>
+    </section>
+
+    <footer class="rodape">Feito para o New_quiz · cálculo 100% no seu navegador</footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
