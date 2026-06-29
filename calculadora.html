@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0e1116" />
+<title>Calculadora de Preço — Impressão 3D</title>
+<style>
+:root {
+  --bg: #0e1116;
+  --card: #161b22;
+  --card2: #1c2230;
+  --border: #2a3340;
+  --txt: #e6edf3;
+  --muted: #8b97a7;
+  --accent: #2dd4ff;
+  --verde: #4ade80;
+  --roxo: #c084fc;
+  --amarelo: #fde047;
+  --vermelho: #f87171;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--txt);
+  line-height: 1.45;
+  padding: 16px;
+}
+
+.app { max-width: 480px; margin: 0 auto; }
+
+.topbar { text-align: center; margin-bottom: 18px; }
+.topbar h1 { font-size: 1.5rem; }
+.topbar .sub { color: var(--muted); font-size: .9rem; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.card h2 { font-size: 1.05rem; margin-bottom: 12px; }
+.card h3 { font-size: .9rem; margin: 16px 0 8px; color: var(--muted); }
+
+summary { cursor: pointer; font-weight: 600; }
+.config[open] summary { margin-bottom: 12px; }
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  font-size: .78rem;
+  color: var(--muted);
+  gap: 5px;
+}
+label.full { grid-column: 1 / -1; margin-bottom: 12px; }
+label small { color: var(--muted); opacity: .7; }
+
+input[type="number"], select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 11px 12px;
+  color: var(--txt);
+  font-size: 1rem;
+  width: 100%;
+}
+input:focus, select:focus { outline: none; border-color: var(--accent); }
+
+.hint { font-size: .72rem; color: var(--muted); margin-top: 10px; opacity: .85; }
+
+.margem-valor { font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+input[type="range"] { width: 100%; margin: 8px 0 2px; accent-color: var(--accent); }
+.range-min { font-size: .72rem; color: var(--muted); margin-bottom: 12px; }
+
+.btn-col { display: flex; flex-direction: column; gap: 8px; justify-content: flex-end; }
+.btn {
+  background: var(--accent);
+  color: #04222b;
+  border: none;
+  border-radius: 9px;
+  padding: 11px 14px;
+  font-size: .9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn.ghost { background: transparent; color: var(--txt); border: 1px solid var(--border); }
+.btn.small { padding: 8px 10px; font-size: .8rem; }
+
+.acoes { display: flex; gap: 10px; margin-bottom: 16px; }
+.acoes .btn { flex: 1; }
+
+.resultado { background: var(--card2); }
+
+.preco-box {
+  border: 1.5px solid var(--accent);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.preco-label { font-size: .8rem; color: var(--muted); }
+.preco-valor { font-size: 2.1rem; font-weight: 800; color: var(--accent); }
+
+.metricas { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.metrica {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.metrica span { font-size: .72rem; color: var(--muted); }
+.metrica strong { font-size: 1.15rem; }
+.verde { color: var(--verde); }
+.roxo { color: var(--roxo); }
+.amarelo { color: var(--amarelo); }
+
+.breakdown { list-style: none; }
+.breakdown li {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 2px;
+  border-bottom: 1px solid var(--border);
+  font-size: .85rem;
+}
+.breakdown li span { color: var(--muted); }
+.breakdown li:last-child { border-bottom: none; }
+
+.catalogo { list-style: none; }
+.catalogo li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 2px;
+  border-bottom: 1px solid var(--border);
+  font-size: .85rem;
+}
+.catalogo li:last-child { border-bottom: none; }
+.catalogo .cat-info { flex: 1; min-width: 0; }
+.catalogo .cat-nome { font-weight: 600; }
+.catalogo .cat-sub { font-size: .72rem; color: var(--muted); }
+.catalogo .cat-actions { display: flex; gap: 6px; }
+.catalogo button {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--txt); border-radius: 7px; padding: 5px 9px;
+  font-size: .75rem; cursor: pointer;
+}
+
+/* VEREDITO */
+.veredito {
+  border-radius: 14px;
+  padding: 18px 16px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 2px solid var(--border);
+  background: var(--card);
+}
+.vd-tag { font-size: 1.25rem; font-weight: 800; letter-spacing: .3px; }
+.vd-msg { font-size: .9rem; color: var(--txt); }
+.veredito.ok { border-color: var(--verde); background: rgba(74,222,128,.08); }
+.veredito.ok .vd-tag { color: var(--verde); }
+.veredito.warn { border-color: var(--amarelo); background: rgba(253,224,71,.08); }
+.veredito.warn .vd-tag { color: var(--amarelo); }
+.veredito.bad { border-color: var(--vermelho); background: rgba(248,113,113,.10); }
+.veredito.bad .vd-tag { color: var(--vermelho); }
+
+.rodape { text-align: center; color: var(--muted); font-size: .72rem; margin-top: 8px; }
+
+@media print {
+  body { background: #fff; color: #000; }
+  .no-print, summary, input[type="range"] { display: none !important; }
+  .card, .veredito { border-color: #ccc; background: #fff; }
+  .preco-valor, .accent, .verde, .roxo, .amarelo { color: #000 !important; }
+  .config { display: none; }
+}
+
+</style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <h1>🧮 Calculadora 3D</h1>
+      <p class="sub">Precificação de peças · <span id="printerNome">Bambu Lab</span></p>
+    </header>
+
+    <!-- CONFIGURAÇÕES -->
+    <details class="card config">
+      <summary>⚙️ Configurações (impressora e custos)</summary>
+
+      <label class="full">Impressora (preset de potência)
+        <select id="printer">
+          <option value="90">Bambu Lab A1 mini (~90 W)</option>
+          <option value="95">Bambu Lab A1 (~95 W)</option>
+          <option value="110">Bambu Lab P1P / P1S (~110 W)</option>
+          <option value="120">Bambu Lab X1 / X1-Carbon (~120 W)</option>
+          <option value="140" selected>Bambu Lab X2D — bico duplo (~140 W estim.)</option>
+          <option value="150">Bambu Lab H2D (~150 W)</option>
+          <option value="custom">Personalizado…</option>
+        </select>
+      </label>
+
+      <div class="grid">
+        <label>Potência média (W)
+          <input id="potencia" type="number" step="1" value="140" />
+        </label>
+        <label>Tarifa de energia (C$/kWh)
+          <input id="tarifa" type="number" step="0.01" value="0.15" />
+        </label>
+        <label>Depreciação da máquina (C$/h)
+          <input id="maquinaHora" type="number" step="0.01" value="0" />
+        </label>
+        <label>Mão de obra / pós-processo (C$)
+          <input id="maoObra" type="number" step="0.01" value="0" />
+        </label>
+        <label>Custo fixo extra (C$)
+          <input id="fixoExtra" type="number" step="0.01" value="0" />
+        </label>
+        <label>Meta de lucro por hora (C$/h)
+          <input id="metaHora" type="number" step="0.50" value="3.00" />
+        </label>
+      </div>
+      <p class="hint">A potência é a média durante a impressão (não o pico). Ajuste se medir o consumo real da sua Bambu Lab.</p>
+    </details>
+
+    <!-- FILAMENTO -->
+    <section class="card">
+      <h2>🧵 Filamento</h2>
+      <label class="full">Perfil de filamento
+        <select id="filamentoPerfil"></select>
+      </label>
+      <div class="grid">
+        <label>Preço do filamento (C$/kg)
+          <input id="precoKg" type="number" step="0.01" value="25.00" />
+        </label>
+        <div class="btn-col">
+          <button type="button" id="novoFilamento" class="btn small">+ Novo</button>
+          <button type="button" id="excluirFilamento" class="btn small ghost">Excluir</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- DADOS DA PEÇA -->
+    <section class="card">
+      <h2>📦 Dados da peça</h2>
+      <div class="grid">
+        <label>Filamento usado (g)
+          <input id="filamento" type="number" step="0.1" value="258" />
+        </label>
+        <label>Tempo de impressão (h)
+          <input id="tempo" type="number" step="0.1" value="8" />
+        </label>
+        <label>Quantidade
+          <input id="quantidade" type="number" step="1" value="1" />
+        </label>
+        <label>Perda / refugo (%)
+          <input id="perda" type="number" step="0.1" value="0" />
+        </label>
+      </div>
+    </section>
+
+    <!-- MARGEM -->
+    <section class="card">
+      <h2>📊 Margem desejada</h2>
+      <div class="margem-valor"><span id="margemLabel">40</span>%</div>
+      <input id="margem" type="range" min="5" max="90" step="1" value="40" />
+      <div class="range-min">5%</div>
+      <div class="grid">
+        <label>Desconto por unidade (C$)
+          <input id="desconto" type="number" step="0.01" value="0" />
+        </label>
+        <label>Preço de venda manual (C$) <small>opcional</small>
+          <input id="precoManual" type="number" step="0.01" value="" placeholder="auto" />
+        </label>
+      </div>
+      <p class="hint">Preencha o preço de venda manual para testar quanto realmente sobra naquele preço.</p>
+    </section>
+
+    <!-- RESULTADO -->
+    <section class="card resultado">
+      <h2>🏆 Resultado</h2>
+      <div class="preco-box">
+        <span class="preco-label">Preço sugerido por unidade</span>
+        <span class="preco-valor" id="precoUnid">R$ 0,00</span>
+      </div>
+
+      <div class="metricas">
+        <div class="metrica">
+          <span>Custo total</span>
+          <strong id="custoTotal">R$ 0,00</strong>
+        </div>
+        <div class="metrica">
+          <span>Lucro por unidade</span>
+          <strong class="verde" id="lucroUnid">R$ 0,00</strong>
+        </div>
+        <div class="metrica">
+          <span>Lucro total (qtd)</span>
+          <strong class="roxo" id="lucroTotal">R$ 0,00</strong>
+        </div>
+        <div class="metrica">
+          <span>Margem real</span>
+          <strong class="verde" id="margemReal">0%</strong>
+        </div>
+        <div class="metrica">
+          <span>Lucro por hora</span>
+          <strong class="amarelo" id="lucroHora">R$ 0,00</strong>
+        </div>
+        <div class="metrica">
+          <span>Receita total</span>
+          <strong id="receitaTotal">R$ 0,00</strong>
+        </div>
+      </div>
+
+      <h3>Composição do custo (por unidade)</h3>
+      <ul class="breakdown">
+        <li><span>Filamento (<i id="bdFilG">0</i>g)</span><b id="bdFil">R$ 0,00</b></li>
+        <li><span>Perda/refugo (<i id="bdPerdaP">0</i>%)</span><b id="bdPerda">R$ 0,00</b></li>
+        <li><span>Energia (<i id="bdEnergiaH">0</i>h)</span><b id="bdEnergia">R$ 0,00</b></li>
+        <li><span>Máquina/depreciação</span><b id="bdMaquina">R$ 0,00</b></li>
+        <li><span>Mão de obra</span><b id="bdMao">R$ 0,00</b></li>
+        <li><span>Custo fixo extra</span><b id="bdFixo">R$ 0,00</b></li>
+      </ul>
+    </section>
+
+    <!-- AÇÕES -->
+    <section class="acoes no-print">
+      <button type="button" id="salvarPeca" class="btn">💾 Salvar peça</button>
+      <button type="button" id="exportarPdf" class="btn ghost">📄 Exportar PDF</button>
+    </section>
+
+    <!-- CATÁLOGO -->
+    <section class="card no-print" id="catalogoCard" hidden>
+      <h2>📚 Catálogo de peças</h2>
+      <ul class="catalogo" id="catalogo"></ul>
+    </section>
+
+    <!-- VEREDITO / RODAPÉ -->
+    <footer class="veredito" id="veredito">
+      <span class="vd-tag" id="vdTag">—</span>
+      <span class="vd-msg" id="vdMsg">Preencha os dados para ver o veredito.</span>
+    </footer>
+    <p class="rodape">Cálculo 100% no seu navegador · funciona offline</p>
+  </main>
+
+  <script>
+// Calculadora de precificação para impressão 3D — Bambu Lab
+// Lógica de custo reconstruída do app de referência + veredito de viabilidade.
+
+const $ = (id) => document.getElementById(id);
+
+const FIELDS = [
+  "potencia", "tarifa", "maquinaHora", "maoObra", "fixoExtra", "metaHora",
+  "precoKg", "filamento", "tempo", "quantidade", "perda", "margem",
+  "desconto", "precoManual",
+];
+
+const LS_FIL = "calc3d_filaments_cad";
+const LS_PECAS = "calc3d_pecas_cad";
+const LS_STATE = "calc3d_state_cad";
+
+// Moeda em dólar canadense (CAD)
+const money = (v) =>
+  "C$ " + v.toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const num = (id) => parseFloat($(id).value) || 0;
+const load = (k, def) => { try { return JSON.parse(localStorage.getItem(k)) ?? def; } catch { return def; } };
+const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+const uid = () => Math.random().toString(36).slice(2, 9);
+
+// ---------------------------------------------------------------- cálculo ----
+function calcular() {
+  const precoKg = num("precoKg");
+  const potenciaW = num("potencia");
+  const tarifa = num("tarifa");
+  const maquinaHora = num("maquinaHora");
+  const maoObra = num("maoObra");
+  const fixoExtra = num("fixoExtra");
+  const metaHora = num("metaHora");
+
+  const filamentoG = num("filamento");
+  const tempoH = num("tempo");
+  const qtd = Math.max(1, num("quantidade"));
+  const perdaP = num("perda");
+  const margemP = num("margem");
+  const desconto = num("desconto");
+  const precoManual = parseFloat($("precoManual").value);
+
+  $("margemLabel").textContent = margemP;
+
+  // custos por unidade
+  const custoFilamento = (filamentoG / 1000) * precoKg;
+  const custoPerda = custoFilamento * (perdaP / 100);
+  const custoEnergia = (potenciaW / 1000) * tempoH * tarifa;
+  const custoMaquina = maquinaHora * tempoH;
+  const custoTotal =
+    custoFilamento + custoPerda + custoEnergia + custoMaquina + maoObra + fixoExtra;
+
+  // preço: manual se preenchido, senão sugerido pela margem
+  const margem = Math.min(margemP, 99.9) / 100;
+  const precoSugerido = Math.max(0, custoTotal / (1 - margem) - desconto);
+  const usandoManual = !isNaN(precoManual) && precoManual > 0;
+  const precoUnid = usandoManual ? precoManual : precoSugerido;
+
+  const lucroUnid = precoUnid - custoTotal;
+  const lucroTotal = lucroUnid * qtd;
+  const receitaTotal = precoUnid * qtd;
+  const margemReal = precoUnid > 0 ? (lucroUnid / precoUnid) * 100 : 0;
+  const lucroHora = tempoH > 0 ? lucroUnid / tempoH : 0;
+
+  // saída
+  $("precoUnid").textContent = money(precoUnid);
+  document.querySelector(".preco-label").textContent =
+    usandoManual ? "Preço de venda (manual)" : "Preço sugerido por unidade";
+  $("custoTotal").textContent = money(custoTotal);
+  $("lucroUnid").textContent = money(lucroUnid);
+  $("lucroTotal").textContent = money(lucroTotal);
+  $("margemReal").textContent = margemReal.toFixed(1) + "%";
+  $("lucroHora").textContent = money(lucroHora);
+  $("receitaTotal").textContent = money(receitaTotal);
+  $("lucroUnid").style.color = lucroUnid >= 0 ? "var(--verde)" : "var(--vermelho)";
+  $("margemReal").style.color = margemReal >= 0 ? "var(--verde)" : "var(--vermelho)";
+
+  $("bdFilG").textContent = filamentoG;
+  $("bdFil").textContent = money(custoFilamento);
+  $("bdPerdaP").textContent = perdaP;
+  $("bdPerda").textContent = money(custoPerda);
+  $("bdEnergiaH").textContent = tempoH;
+  $("bdEnergia").textContent = money(custoEnergia);
+  $("bdMaquina").textContent = money(custoMaquina);
+  $("bdMao").textContent = money(maoObra);
+  $("bdFixo").textContent = money(fixoExtra);
+
+  veredito({ lucroUnid, lucroHora, metaHora, margemReal });
+  persistirEstado();
+}
+
+// ------------------------------------------------------------- veredito ------
+function veredito({ lucroUnid, lucroHora, metaHora, margemReal }) {
+  const el = $("veredito"), tag = $("vdTag"), msg = $("vdMsg");
+  el.classList.remove("ok", "warn", "bad");
+
+  if (lucroUnid <= 0) {
+    el.classList.add("bad");
+    tag.textContent = "❌ INVIÁVEL";
+    msg.textContent =
+      `Nesse preço você teria prejuízo de ${money(Math.abs(lucroUnid))} por peça. ` +
+      `O preço de venda não cobre o filamento + energia + custos. Aumente o preço ou reduza o custo.`;
+  } else if (lucroHora < metaHora) {
+    el.classList.add("warn");
+    tag.textContent = "⚠️ POUCO VIÁVEL";
+    msg.textContent =
+      `Dá lucro de ${money(lucroUnid)} por peça, mas rende só ${money(lucroHora)}/h — ` +
+      `abaixo da sua meta de ${money(metaHora)}/h. A impressora fica muito tempo ocupada para pouco retorno.`;
+  } else {
+    el.classList.add("ok");
+    tag.textContent = "✅ VIÁVEL";
+    msg.textContent =
+      `Vale a pena fazer: lucro de ${money(lucroUnid)} por peça (${margemReal.toFixed(0)}% de margem) ` +
+      `e ${money(lucroHora)}/h de impressão, acima da sua meta de ${money(metaHora)}/h.`;
+  }
+}
+
+// ------------------------------------------------------- estado / persistir --
+function persistirEstado() {
+  const st = {};
+  FIELDS.forEach((f) => (st[f] = $(f).value));
+  st.printer = $("printer").value;
+  save(LS_STATE, st);
+}
+function restaurarEstado() {
+  const st = load(LS_STATE, null);
+  if (!st) return;
+  FIELDS.forEach((f) => { if (st[f] !== undefined) $(f).value = st[f]; });
+  if (st.printer) $("printer").value = st.printer;
+}
+
+// ----------------------------------------------------------- filamentos ------
+function filamentosDefault() {
+  return [
+    { id: uid(), nome: "PLA padrão", precoKg: 25 },
+    { id: uid(), nome: "PETG", precoKg: 30 },
+    { id: uid(), nome: "ABS", precoKg: 28 },
+  ];
+}
+function renderFilamentos(selId) {
+  const fils = load(LS_FIL, null) || (save(LS_FIL, filamentosDefault()), load(LS_FIL, []));
+  const sel = $("filamentoPerfil");
+  sel.innerHTML = "";
+  fils.forEach((f) => {
+    const o = document.createElement("option");
+    o.value = f.id;
+    o.textContent = `${f.nome} — ${money(f.precoKg)}/kg`;
+    sel.appendChild(o);
+  });
+  if (selId) sel.value = selId;
+  const atual = fils.find((f) => f.id === sel.value);
+  if (atual) $("precoKg").value = atual.precoKg;
+}
+function novoFilamento() {
+  const nome = prompt("Nome do filamento:");
+  if (!nome) return;
+  const preco = parseFloat((prompt("Preço por kg (C$):", "25") || "").replace(",", "."));
+  if (!preco || preco <= 0) return;
+  const fils = load(LS_FIL, []);
+  const novo = { id: uid(), nome, precoKg: preco };
+  fils.push(novo);
+  save(LS_FIL, fils);
+  renderFilamentos(novo.id);
+  calcular();
+}
+function excluirFilamento() {
+  const id = $("filamentoPerfil").value;
+  let fils = load(LS_FIL, []);
+  if (fils.length <= 1) return alert("Mantenha ao menos um filamento.");
+  fils = fils.filter((f) => f.id !== id);
+  save(LS_FIL, fils);
+  renderFilamentos(fils[0].id);
+  calcular();
+}
+
+// ------------------------------------------------------------- catálogo ------
+function snapshot() {
+  const st = {};
+  FIELDS.forEach((f) => (st[f] = $(f).value));
+  return st;
+}
+function salvarPeca() {
+  const nome = prompt("Nome da peça:");
+  if (!nome) return;
+  const pecas = load(LS_PECAS, []);
+  pecas.push({ id: uid(), nome, data: snapshot(), preco: $("precoUnid").textContent });
+  save(LS_PECAS, pecas);
+  renderCatalogo();
+}
+function renderCatalogo() {
+  const pecas = load(LS_PECAS, []);
+  const card = $("catalogoCard"), ul = $("catalogo");
+  card.hidden = pecas.length === 0;
+  ul.innerHTML = "";
+  pecas.forEach((p) => {
+    const li = document.createElement("li");
+    li.innerHTML =
+      `<div class="cat-info"><div class="cat-nome"></div><div class="cat-sub"></div></div>` +
+      `<div class="cat-actions"><button data-act="load">Abrir</button><button data-act="del">Excluir</button></div>`;
+    li.querySelector(".cat-nome").textContent = p.nome;
+    li.querySelector(".cat-sub").textContent =
+      `${p.data.filamento}g · ${p.data.tempo}h · ${p.preco}`;
+    li.querySelector('[data-act="load"]').onclick = () => carregarPeca(p.id);
+    li.querySelector('[data-act="del"]').onclick = () => excluirPeca(p.id);
+    ul.appendChild(li);
+  });
+}
+function carregarPeca(id) {
+  const p = load(LS_PECAS, []).find((x) => x.id === id);
+  if (!p) return;
+  FIELDS.forEach((f) => { if (p.data[f] !== undefined) $(f).value = p.data[f]; });
+  calcular();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+function excluirPeca(id) {
+  save(LS_PECAS, load(LS_PECAS, []).filter((x) => x.id !== id));
+  renderCatalogo();
+}
+
+// --------------------------------------------------------------- eventos -----
+$("printer").addEventListener("change", (e) => {
+  const v = e.target.value;
+  $("printerNome").textContent = e.target.selectedOptions[0].text.split(/\s+[—(]/)[0].trim();
+  if (v !== "custom") { $("potencia").value = v; calcular(); }
+});
+$("filamentoPerfil").addEventListener("change", () => { renderFilamentos($("filamentoPerfil").value); calcular(); });
+$("novoFilamento").addEventListener("click", novoFilamento);
+$("excluirFilamento").addEventListener("click", excluirFilamento);
+$("salvarPeca").addEventListener("click", salvarPeca);
+$("exportarPdf").addEventListener("click", () => window.print());
+FIELDS.forEach((id) => $(id).addEventListener("input", calcular));
+
+// ----------------------------------------------------------------- init ------
+restaurarEstado();
+renderFilamentos($("filamentoPerfil").value);
+renderCatalogo();
+$("printerNome").textContent = $("printer").selectedOptions[0].text.split(/\s+[—(]/)[0].trim();
+calcular();
+
+// PWA (só registra em http/https; em file:// é ignorado)
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+}
+
+</script>
+</body>
+</html>
