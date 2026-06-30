@@ -100,6 +100,23 @@ input[type="range"] { width: 100%; margin: 8px 0 2px; accent-color: var(--accent
 .acoes { display: flex; gap: 10px; margin-bottom: 16px; }
 .acoes .btn { flex: 1; }
 
+.cenarios { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.cen {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 6px;
+  color: var(--txt);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+}
+.cen b { color: var(--accent); font-size: 1rem; }
+.cen small { color: var(--muted); font-size: .68rem; }
+.cen.active { border-color: var(--accent); background: rgba(45, 212, 255, .12); }
+
 .resultado { background: var(--card2); }
 
 .preco-box {
@@ -233,22 +250,19 @@ input[type="range"] { width: 100%; margin: 8px 0 2px; accent-color: var(--accent
         <label>Custo fixo extra (C$)
           <input id="fixoExtra" type="number" step="0.01" value="0" />
         </label>
-        <label>Meta de lucro por hora (C$/h) <small>auto</small>
-          <input id="metaHora" type="number" step="0.50" value="12.63" />
+        <label>Meta de lucro por hora (C$/h)
+          <input id="metaHora" type="number" step="0.50" value="5.00" />
         </label>
       </div>
 
-      <h3>🎯 Meta de renda (salário)</h3>
-      <div class="grid">
-        <label>Renda desejada por ano (C$)
-          <input id="rendaAno" type="number" step="1000" value="80000" />
-        </label>
-        <label>Horas de impressão por mês
-          <input id="horasMes" type="number" step="1" value="528" />
-        </label>
+      <h3>🎯 Cenários sugeridos de lucro/hora</h3>
+      <div class="cenarios">
+        <button type="button" class="cen" data-meta="3"><b>C$ 3/h</b><small>Produto comum</small></button>
+        <button type="button" class="cen" data-meta="5"><b>C$ 5/h</b><small>Produto bom</small></button>
+        <button type="button" class="cen" data-meta="8"><b>C$ 8/h</b><small>Premium</small></button>
       </div>
       <p class="hint" id="metaInfo"></p>
-      <p class="hint">1 impressora 24h × 22 dias = 528 h/mês. Para uma fazenda de N máquinas, multiplique (ex.: 4 máquinas = 2112 h/mês). A meta de lucro/hora acima é calculada a partir disso.</p>
+      <p class="hint">Clique num cenário ou digite sua meta. A projeção considera 1 máquina rodando 24h × 22 dias (6.336 h/ano), vendendo tudo.</p>
       <p class="hint">A potência é a média durante a impressão (não o pico). Ajuste se medir o consumo real da sua Bambu Lab.</p>
     </details>
 
@@ -379,10 +393,11 @@ const $ = (id) => document.getElementById(id);
 
 const FIELDS = [
   "potencia", "tarifa", "maquinaHora", "maoObra", "fixoExtra", "metaHora",
-  "rendaAno", "horasMes",
   "precoKg", "filamento", "tempo", "quantidade", "perda", "margem",
   "desconto", "precoManual",
 ];
+
+const HORAS_ANO = 24 * 22 * 12; // 1 máquina 24h × 22 dias = 6.336 h/ano
 
 const LS_FIL = "calc3d_filaments_cad";
 const LS_PECAS = "calc3d_pecas_cad";
@@ -460,6 +475,20 @@ function calcular() {
   $("bdFixo").textContent = money(fixoExtra);
 
   veredito({ lucroUnid, lucroHora, metaHora, margemReal });
+
+  // projeção anual da meta + cenário ativo (referência: 1 máquina)
+  if (metaHora > 0) {
+    const porAno = metaHora * HORAS_ANO;
+    const maquinas = 80000 / porAno;
+    $("metaInfo").textContent =
+      `A ${money(metaHora)}/h, 1 máquina renderia ~${money(porAno)}/ano (vendendo tudo). ` +
+      `Para C$ 80.000/ano seriam ~${maquinas.toFixed(1)} máquinas.`;
+  } else {
+    $("metaInfo").textContent = "";
+  }
+  document.querySelectorAll(".cen").forEach((b) =>
+    b.classList.toggle("active", parseFloat(b.dataset.meta) === metaHora));
+
   persistirEstado();
 }
 
@@ -487,20 +516,6 @@ function veredito({ lucroUnid, lucroHora, metaHora, margemReal }) {
       `Vale a pena fazer: lucro de ${money(lucroUnid)} por peça (${margemReal.toFixed(0)}% de margem) ` +
       `e ${money(lucroHora)}/h de impressão, acima da sua meta de ${money(metaHora)}/h.`;
   }
-}
-
-// ----------------------------------------------- meta de renda (salário) -----
-function atualizarMeta() {
-  const renda = num("rendaAno");
-  const horasAno = num("horasMes") * 12;
-  if (horasAno > 0 && renda > 0) {
-    const metaH = renda / horasAno;
-    $("metaHora").value = metaH.toFixed(2);
-    $("metaInfo").textContent =
-      `Para tirar ${money(renda)}/ano com ${num("horasMes")} h/mês de impressão, ` +
-      `cada hora precisa lucrar ${money(metaH)}/h.`;
-  }
-  calcular();
 }
 
 // ------------------------------------------------------- estado / persistir --
@@ -617,15 +632,15 @@ $("excluirFilamento").addEventListener("click", excluirFilamento);
 $("salvarPeca").addEventListener("click", salvarPeca);
 $("exportarPdf").addEventListener("click", () => window.print());
 FIELDS.forEach((id) => $(id).addEventListener("input", calcular));
-$("rendaAno").addEventListener("input", atualizarMeta);
-$("horasMes").addEventListener("input", atualizarMeta);
+document.querySelectorAll(".cen").forEach((b) =>
+  b.addEventListener("click", () => { $("metaHora").value = b.dataset.meta; calcular(); }));
 
 // ----------------------------------------------------------------- init ------
 restaurarEstado();
 renderFilamentos($("filamentoPerfil").value);
 renderCatalogo();
 $("printerNome").textContent = $("printer").selectedOptions[0].text.split(/\s+[—(]/)[0].trim();
-atualizarMeta();
+calcular();
 
 // PWA (só registra em http/https; em file:// é ignorado)
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {

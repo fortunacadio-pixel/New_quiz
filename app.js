@@ -5,10 +5,11 @@ const $ = (id) => document.getElementById(id);
 
 const FIELDS = [
   "potencia", "tarifa", "maquinaHora", "maoObra", "fixoExtra", "metaHora",
-  "rendaAno", "horasMes",
   "precoKg", "filamento", "tempo", "quantidade", "perda", "margem",
   "desconto", "precoManual",
 ];
+
+const HORAS_ANO = 24 * 22 * 12; // 1 máquina 24h × 22 dias = 6.336 h/ano
 
 const LS_FIL = "calc3d_filaments_cad";
 const LS_PECAS = "calc3d_pecas_cad";
@@ -86,6 +87,20 @@ function calcular() {
   $("bdFixo").textContent = money(fixoExtra);
 
   veredito({ lucroUnid, lucroHora, metaHora, margemReal });
+
+  // projeção anual da meta + cenário ativo (referência: 1 máquina)
+  if (metaHora > 0) {
+    const porAno = metaHora * HORAS_ANO;
+    const maquinas = 80000 / porAno;
+    $("metaInfo").textContent =
+      `A ${money(metaHora)}/h, 1 máquina renderia ~${money(porAno)}/ano (vendendo tudo). ` +
+      `Para C$ 80.000/ano seriam ~${maquinas.toFixed(1)} máquinas.`;
+  } else {
+    $("metaInfo").textContent = "";
+  }
+  document.querySelectorAll(".cen").forEach((b) =>
+    b.classList.toggle("active", parseFloat(b.dataset.meta) === metaHora));
+
   persistirEstado();
 }
 
@@ -113,20 +128,6 @@ function veredito({ lucroUnid, lucroHora, metaHora, margemReal }) {
       `Vale a pena fazer: lucro de ${money(lucroUnid)} por peça (${margemReal.toFixed(0)}% de margem) ` +
       `e ${money(lucroHora)}/h de impressão, acima da sua meta de ${money(metaHora)}/h.`;
   }
-}
-
-// ----------------------------------------------- meta de renda (salário) -----
-function atualizarMeta() {
-  const renda = num("rendaAno");
-  const horasAno = num("horasMes") * 12;
-  if (horasAno > 0 && renda > 0) {
-    const metaH = renda / horasAno;
-    $("metaHora").value = metaH.toFixed(2);
-    $("metaInfo").textContent =
-      `Para tirar ${money(renda)}/ano com ${num("horasMes")} h/mês de impressão, ` +
-      `cada hora precisa lucrar ${money(metaH)}/h.`;
-  }
-  calcular();
 }
 
 // ------------------------------------------------------- estado / persistir --
@@ -243,15 +244,15 @@ $("excluirFilamento").addEventListener("click", excluirFilamento);
 $("salvarPeca").addEventListener("click", salvarPeca);
 $("exportarPdf").addEventListener("click", () => window.print());
 FIELDS.forEach((id) => $(id).addEventListener("input", calcular));
-$("rendaAno").addEventListener("input", atualizarMeta);
-$("horasMes").addEventListener("input", atualizarMeta);
+document.querySelectorAll(".cen").forEach((b) =>
+  b.addEventListener("click", () => { $("metaHora").value = b.dataset.meta; calcular(); }));
 
 // ----------------------------------------------------------------- init ------
 restaurarEstado();
 renderFilamentos($("filamentoPerfil").value);
 renderCatalogo();
 $("printerNome").textContent = $("printer").selectedOptions[0].text.split(/\s+[—(]/)[0].trim();
-atualizarMeta();
+calcular();
 
 // PWA (só registra em http/https; em file:// é ignorado)
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {

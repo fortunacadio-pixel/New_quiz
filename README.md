@@ -32,17 +32,19 @@ todos os custos + tempo**:
 | ⚠️ **POUCO VIÁVEL** | lucro > 0 **mas** lucro/hora < meta | Dá lucro, mas a impressora fica ocupada tempo demais para pouco retorno |
 | ❌ **INVIÁVEL** | lucro ≤ 0 | O preço de venda não cobre os custos — prejuízo |
 
-### Meta de lucro por hora (C$/h) — derivada do salário
+### Meta de lucro por hora (C$/h) + cenários
 
-A meta é **calculada a partir da sua renda desejada**:
+Campo livre onde você digita o lucro/hora alvo, com **3 cenários sugeridos**:
 
-```
-meta C$/h = renda desejada por ano ÷ (horas de impressão por mês × 12)
-```
+| Cenário | Lucro/h | 1 máquina rende/ano | Máquinas p/ C$ 80k |
+|---------|---------|---------------------|--------------------|
+| Produto comum | C$ 3/h | ~C$ 19.000 | ~4,2 |
+| Produto bom | C$ 5/h | ~C$ 31.700 | ~2,5 |
+| Premium | C$ 8/h | ~C$ 50.700 | ~1,6 |
 
-Exemplo padrão: C$ 80.000/ano com 528 h/mês (1 máquina 24h × 22 dias) →
-**C$ 12,63/h**. Para uma fazenda de N máquinas, multiplique as horas/mês.
-O veredito de cada peça é comparado contra essa meta.
+Projeção considerando 1 máquina a 24h × 22 dias = 6.336 h/ano, vendendo tudo.
+Clicar num cenário preenche o campo; o veredito de cada peça é comparado contra
+essa meta.
 
 ## Fórmulas
 
