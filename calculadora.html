@@ -250,19 +250,7 @@ input[type="range"] { width: 100%; margin: 8px 0 2px; accent-color: var(--accent
         <label>Custo fixo extra (C$)
           <input id="fixoExtra" type="number" step="0.01" value="0" />
         </label>
-        <label>Meta de lucro por hora (C$/h)
-          <input id="metaHora" type="number" step="0.50" value="5.00" />
-        </label>
       </div>
-
-      <h3>🎯 Cenários sugeridos de lucro/hora</h3>
-      <div class="cenarios">
-        <button type="button" class="cen" data-meta="3"><b>C$ 3/h</b><small>Produto comum</small></button>
-        <button type="button" class="cen" data-meta="5"><b>C$ 5/h</b><small>Produto bom</small></button>
-        <button type="button" class="cen" data-meta="8"><b>C$ 8/h</b><small>Premium</small></button>
-      </div>
-      <p class="hint" id="metaInfo"></p>
-      <p class="hint">Clique num cenário ou digite sua meta. A projeção considera 1 máquina rodando 24h × 22 dias (6.336 h/ano), vendendo tudo.</p>
       <p class="hint">A potência é a média durante a impressão (não o pico). Ajuste se medir o consumo real da sua Bambu Lab.</p>
     </details>
 
@@ -317,6 +305,21 @@ input[type="range"] { width: 100%; margin: 8px 0 2px; accent-color: var(--accent
         </label>
       </div>
       <p class="hint">Preencha o preço de venda manual para testar quanto realmente sobra naquele preço.</p>
+    </section>
+
+    <!-- META DE LUCRO/HORA -->
+    <section class="card">
+      <h2>🎯 Meta de lucro por hora</h2>
+      <label class="full">Quanto você quer lucrar por hora de impressora (C$/h)
+        <input id="metaHora" type="number" step="0.50" value="5.00" />
+      </label>
+      <div class="cenarios">
+        <button type="button" class="cen" data-meta="3"><b>C$ 3/h</b><small>Produto comum</small></button>
+        <button type="button" class="cen" data-meta="5"><b>C$ 5/h</b><small>Produto bom</small></button>
+        <button type="button" class="cen" data-meta="8"><b>C$ 8/h</b><small>Premium</small></button>
+      </div>
+      <p class="hint" id="metaInfo"></p>
+      <p class="hint">Clique num cenário ou digite sua meta. A projeção considera 1 máquina rodando 24h × 22 dias (6.336 h/ano), vendendo tudo.</p>
     </section>
 
     <!-- RESULTADO -->
