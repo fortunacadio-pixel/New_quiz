@@ -48,10 +48,22 @@
         <label>Custo fixo extra (C$)
           <input id="fixoExtra" type="number" step="0.01" value="0" />
         </label>
-        <label>Meta de lucro por hora (C$/h)
-          <input id="metaHora" type="number" step="0.50" value="3.00" />
+        <label>Meta de lucro por hora (C$/h) <small>auto</small>
+          <input id="metaHora" type="number" step="0.50" value="12.63" />
         </label>
       </div>
+
+      <h3>🎯 Meta de renda (salário)</h3>
+      <div class="grid">
+        <label>Renda desejada por ano (C$)
+          <input id="rendaAno" type="number" step="1000" value="80000" />
+        </label>
+        <label>Horas de impressão por mês
+          <input id="horasMes" type="number" step="1" value="528" />
+        </label>
+      </div>
+      <p class="hint" id="metaInfo"></p>
+      <p class="hint">1 impressora 24h × 22 dias = 528 h/mês. Para uma fazenda de N máquinas, multiplique (ex.: 4 máquinas = 2112 h/mês). A meta de lucro/hora acima é calculada a partir disso.</p>
       <p class="hint">A potência é a média durante a impressão (não o pico). Ajuste se medir o consumo real da sua Bambu Lab.</p>
     </details>
 

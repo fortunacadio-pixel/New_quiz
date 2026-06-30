@@ -32,13 +32,17 @@ todos os custos + tempo**:
 | ⚠️ **POUCO VIÁVEL** | lucro > 0 **mas** lucro/hora < meta | Dá lucro, mas a impressora fica ocupada tempo demais para pouco retorno |
 | ❌ **INVIÁVEL** | lucro ≤ 0 | O preço de venda não cobre os custos — prejuízo |
 
-### Meta de lucro por hora (C$/h)
+### Meta de lucro por hora (C$/h) — derivada do salário
 
-É o **lucro mínimo que você quer por hora de impressora ocupada** — não é
-salário, porque a impressora roda sozinha. Serve para você não aceitar uma peça
-que prende a máquina por horas em troca de quase nada. Padrão **C$ 3,00/h**,
-totalmente ajustável nas configurações (suba se quiser ser mais exigente,
-abaixe se a máquina costuma ficar ociosa mesmo).
+A meta é **calculada a partir da sua renda desejada**:
+
+```
+meta C$/h = renda desejada por ano ÷ (horas de impressão por mês × 12)
+```
+
+Exemplo padrão: C$ 80.000/ano com 528 h/mês (1 máquina 24h × 22 dias) →
+**C$ 12,63/h**. Para uma fazenda de N máquinas, multiplique as horas/mês.
+O veredito de cada peça é comparado contra essa meta.
 
 ## Fórmulas
 
